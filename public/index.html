@@ -3,89 +3,654 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Link Shortener API</title>
+  <title>Admin - Link Shortener</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      background: #0f0f1a;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       color: #fff;
     }
+    
     .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .stats-bar {
+      display: flex;
+      gap: 24px;
+    }
+    
+    .stat {
       text-align: center;
-      padding: 40px;
-      max-width: 600px;
     }
-    h1 { font-size: 32px; margin-bottom: 16px; }
-    p { color: #aaa; margin-bottom: 24px; }
-    .endpoints {
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 24px;
-      text-align: left;
-      margin-top: 24px;
-    }
-    .endpoint {
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .endpoint:last-child { border-bottom: none; }
-    .method {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+    
+    .stat-value {
+      font-size: 24px;
       font-weight: bold;
-      margin-right: 8px;
+      color: #3b82f6;
     }
-    .get { background: #10b981; }
-    .post { background: #3b82f6; }
-    .delete { background: #ef4444; }
-    .put { background: #f59e0b; }
-    code { color: #fbbf24; }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    /* Form */
+    .create-form {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      border: 1px solid #2a2a4a;
+    }
+    
+    .form-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 200px 200px auto;
+      gap: 12px;
+      align-items: end;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    label {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    input {
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    
+    input::placeholder {
+      color: #555;
+    }
+    
+    button {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    
+    button:hover {
+      background: #2563eb;
+    }
+    
+    button:disabled {
+      background: #333;
+      cursor: not-allowed;
+    }
+    
+    /* Links table */
+    .links-section {
+      background: #1a1a2e;
+      border-radius: 16px;
+      border: 1px solid #2a2a4a;
+      overflow: hidden;
+    }
+    
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #2a2a4a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .refresh-btn {
+      background: transparent;
+      border: 1px solid #333;
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+    
+    .refresh-btn:hover {
+      background: #2a2a4a;
+    }
+    
+    .links-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .link-item {
+      display: grid;
+      grid-template-columns: 1fr 2fr auto auto;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid #2a2a4a;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    
+    .link-item:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    @media (max-width: 768px) {
+      .link-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+    
+    .link-slug {
+      font-weight: 600;
+      color: #3b82f6;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    
+    .link-destination {
+      color: #888;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .link-clicks {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #10b981;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .link-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+    
+    .btn-copy {
+      background: #10b981;
+    }
+    
+    .btn-copy:hover {
+      background: #059669;
+    }
+    
+    .btn-delete {
+      background: #ef4444;
+    }
+    
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+    
+    .btn-stats {
+      background: #8b5cf6;
+    }
+    
+    .btn-stats:hover {
+      background: #7c3aed;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+    
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.error {
+      background: #ef4444;
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .stats-card {
+      background: #0f0f1a;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stats-card-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    
+    .stats-card-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+    
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #333;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔗 Link Shortener API</h1>
-    <p>Sistema de encurtamento de links com analytics</p>
+    <header>
+      <h1>🔗 Link Shortener</h1>
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value" id="total-links">-</div>
+          <div class="stat-label">Links</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="total-clicks">-</div>
+          <div class="stat-label">Cliques</div>
+        </div>
+      </div>
+    </header>
     
-    <div class="endpoints">
-      <div class="endpoint">
-        <span class="method post">POST</span>
-        <code>/api/links</code>
-        <br><small style="color:#888">Criar novo link</small>
+    <!-- Create Form -->
+    <div class="create-form">
+      <h2 class="form-title">✨ Criar novo link</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>URL de destino *</label>
+          <input type="url" id="input-url" placeholder="https://youtube.com/watch?v=..." required>
+        </div>
+        <div class="form-group">
+          <label>Slug (opcional)</label>
+          <input type="text" id="input-slug" placeholder="meu-link">
+        </div>
+        <div class="form-group">
+          <label>Título (opcional)</label>
+          <input type="text" id="input-title" placeholder="Aula 1">
+        </div>
+        <button id="btn-create" onclick="createLink()">Criar</button>
       </div>
-      <div class="endpoint">
-        <span class="method get">GET</span>
-        <code>/api/links</code>
-        <br><small style="color:#888">Listar todos os links</small>
+    </div>
+    
+    <!-- Links List -->
+    <div class="links-section">
+      <div class="section-header">
+        <h3 class="section-title">📋 Seus links</h3>
+        <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
       </div>
-      <div class="endpoint">
-        <span class="method get">GET</span>
-        <code>/api/link/{slug}</code>
-        <br><small style="color:#888">Detalhes de um link</small>
-      </div>
-      <div class="endpoint">
-        <span class="method put">PUT</span>
-        <code>/api/link/{slug}</code>
-        <br><small style="color:#888">Atualizar link</small>
-      </div>
-      <div class="endpoint">
-        <span class="method delete">DELETE</span>
-        <code>/api/link/{slug}</code>
-        <br><small style="color:#888">Remover link</small>
-      </div>
-      <div class="endpoint">
-        <span class="method get">GET</span>
-        <code>/api/stats/{slug}</code>
-        <br><small style="color:#888">Estatísticas do link</small>
+      <div class="links-list" id="links-list">
+        <div class="empty-state">
+          <div class="loading"></div>
+          <p style="margin-top:16px">Carregando links...</p>
+        </div>
       </div>
     </div>
   </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  
+  <!-- Stats Modal -->
+  <div class="modal" id="stats-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 Estatísticas</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div id="stats-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    
+    // Toast notification
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => toast.className = 'toast', 3000);
+    }
+    
+    // Load all links
+    async function loadLinks() {
+      try {
+        const res = await fetch(`${API_BASE}/api/links`);
+        const data = await res.json();
+        
+        document.getElementById('total-links').textContent = data.total || 0;
+        
+        const totalClicks = data.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+        document.getElementById('total-clicks').textContent = totalClicks;
+        
+        const listEl = document.getElementById('links-list');
+        
+        if (!data.links || data.links.length === 0) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              <p>Nenhum link criado ainda</p>
+              <p style="font-size:13px;margin-top:8px">Crie seu primeiro link acima!</p>
+            </div>
+          `;
+          return;
+        }
+        
+        listEl.innerHTML = data.links.map(link => `
+          <div class="link-item">
+            <div>
+              <a href="${link.short_url}" target="_blank" class="link-slug">/${link.slug}</a>
+              ${link.title ? `<div style="font-size:12px;color:#666;margin-top:4px">${link.title}</div>` : ''}
+            </div>
+            <div class="link-destination" title="${link.destination_url}">${link.destination_url}</div>
+            <div class="link-clicks">
+              <span>👆</span> ${link.clicks || 0} cliques
+            </div>
+            <div class="link-actions">
+              <button class="btn-small btn-copy" onclick="copyLink('${link.short_url}')">Copiar</button>
+              <button class="btn-small btn-stats" onclick="showStats('${link.slug}')">Stats</button>
+              <button class="btn-small btn-delete" onclick="deleteLink('${link.slug}')">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (err) {
+        console.error(err);
+        showToast('Erro ao carregar links', true);
+      }
+    }
+    
+    // Create new link
+    async function createLink() {
+      const url = document.getElementById('input-url').value.trim();
+      const slug = document.getElementById('input-slug').value.trim();
+      const title = document.getElementById('input-title').value.trim();
+      
+      if (!url) {
+        showToast('URL é obrigatória', true);
+        return;
+      }
+      
+      const btn = document.getElementById('btn-create');
+      btn.disabled = true;
+      btn.textContent = 'Criando...';
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/links`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, slug: slug || undefined, title: title || undefined })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || 'Erro ao criar');
+        }
+        
+        showToast(`Link criado: ${data.link.short_url}`);
+        
+        // Clear form
+        document.getElementById('input-url').value = '';
+        document.getElementById('input-slug').value = '';
+        document.getElementById('input-title').value = '';
+        
+        // Reload list
+        loadLinks();
+        
+      } catch (err) {
+        console.error(err);
+        showToast(err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar';
+      }
+    }
+    
+    // Copy link to clipboard
+    function copyLink(url) {
+      navigator.clipboard.writeText(url);
+      showToast('Link copiado!');
+    }
+    
+    // Delete link
+    async function deleteLink(slug) {
+      if (!confirm(`Tem certeza que quer deletar /${slug}?`)) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/link/${slug}`, {
+          method: 'DELETE'
+        });
+        
+        if (!res.ok) throw new Error('Erro ao deletar');
+        
+        showToast('Link removido');
+        loadLinks();
+        
+      } catch (err) {
+        showToast('Erro ao deletar', true);
+      }
+    }
+    
+    // Show stats modal
+    async function showStats(slug) {
+      const modal = document.getElementById('stats-modal');
+      const content = document.getElementById('stats-content');
+      
+      content.innerHTML = '<div style="text-align:center;padding:40px"><div class="loading"></div></div>';
+      modal.classList.add('show');
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/stats/${slug}?days=30`);
+        const data = await res.json();
+        
+        const stats = data.stats;
+        
+        content.innerHTML = `
+          <div style="margin-bottom:20px">
+            <strong style="color:#3b82f6">/${data.link.slug}</strong>
+            <div style="font-size:13px;color:#666;margin-top:4px">${data.link.destination_url}</div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stats-card">
+              <div class="stats-card-value">${stats.total_clicks}</div>
+              <div class="stats-card-label">Cliques totais</div>
+            </div>
+            <div class="stats-card">
+              <div class="stats-card-value">${stats.clicks_in_period}</div>
+              <div class="stats-card-label">Últimos 30 dias</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:20px">
+            <h4 style="font-size:14px;margin-bottom:12px">📱 Por dispositivo</h4>
+            ${Object.entries(stats.by_device).map(([device, count]) => `
+              <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333">
+                <span>${device}</span>
+                <span style="color:#3b82f6">${count}</span>
+              </div>
+            `).join('') || '<div style="color:#666;padding:8px 0">Sem dados</div>'}
+          </div>
+          
+          <div style="margin-top:20px">
+            <h4 style="font-size:14px;margin-bottom:12px">🌍 Por país</h4>
+            ${Object.entries(stats.by_country).map(([country, count]) => `
+              <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333">
+                <span>${country}</span>
+                <span style="color:#3b82f6">${count}</span>
+              </div>
+            `).join('') || '<div style="color:#666;padding:8px 0">Sem dados</div>'}
+          </div>
+        `;
+        
+      } catch (err) {
+        content.innerHTML = '<p style="color:#ef4444;text-align:center">Erro ao carregar estatísticas</p>';
+      }
+    }
+    
+    function closeModal() {
+      document.getElementById('stats-modal').classList.remove('show');
+    }
+    
+    // Close modal on click outside
+    document.getElementById('stats-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'stats-modal') closeModal();
+    });
+    
+    // Enter key to create
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') createLink();
+      });
+    });
+    
+    // Initial load
+    loadLinks();
+  </script>
 </body>
 </html>
