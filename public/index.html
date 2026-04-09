@@ -14,6 +14,84 @@
       color: #fff;
     }
     
+    /* Login Screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-box {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid #2a2a4a;
+      text-align: center;
+    }
+    
+    .login-box h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    
+    .login-box p {
+      color: #888;
+      margin-bottom: 32px;
+    }
+    
+    .login-box input {
+      width: 100%;
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .login-box input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    
+    .login-box button {
+      width: 100%;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .login-box button:hover {
+      background: #2563eb;
+    }
+    
+    .login-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    /* Admin Panel */
+    .admin-panel {
+      display: none;
+    }
+    
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -25,6 +103,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
     
     h1 {
@@ -32,6 +112,33 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .user-info {
+      font-size: 14px;
+      color: #888;
+    }
+    
+    .btn-logout {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-logout:hover {
+      background: #ef4444;
+      color: #fff;
     }
     
     .stats-bar {
@@ -199,6 +306,11 @@
       color: #3b82f6;
       font-family: monospace;
       font-size: 14px;
+      text-decoration: none;
+    }
+    
+    .link-slug:hover {
+      text-decoration: underline;
     }
     
     .link-destination {
@@ -378,10 +490,33 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  
+  <!-- Login Screen -->
+  <div class="login-screen" id="login-screen">
+    <div class="login-box">
       <h1>🔗 Link Shortener</h1>
-      <div class="stats-bar">
+      <p>Faça login para acessar o painel</p>
+      
+      <div class="login-error" id="login-error"></div>
+      
+      <input type="email" id="login-email" placeholder="Seu email">
+      <input type="password" id="login-password" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+    </div>
+  </div>
+  
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="admin-panel">
+    <div class="container">
+      <header>
+        <h1>🔗 Link Shortener</h1>
+        <div class="header-right">
+          <span class="user-info" id="user-email"></span>
+          <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+      </header>
+      
+      <div class="stats-bar" style="margin-bottom: 32px;">
         <div class="stat">
           <div class="stat-value" id="total-links">-</div>
           <div class="stat-label">Links</div>
@@ -391,38 +526,38 @@
           <div class="stat-label">Cliques</div>
         </div>
       </div>
-    </header>
-    
-    <!-- Create Form -->
-    <div class="create-form">
-      <h2 class="form-title">✨ Criar novo link</h2>
-      <div class="form-row">
-        <div class="form-group">
-          <label>URL de destino *</label>
-          <input type="url" id="input-url" placeholder="https://youtube.com/watch?v=..." required>
+      
+      <!-- Create Form -->
+      <div class="create-form">
+        <h2 class="form-title">✨ Criar novo link</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>URL de destino *</label>
+            <input type="url" id="input-url" placeholder="https://youtube.com/watch?v=..." required>
+          </div>
+          <div class="form-group">
+            <label>Slug (opcional)</label>
+            <input type="text" id="input-slug" placeholder="meu-link">
+          </div>
+          <div class="form-group">
+            <label>Título (opcional)</label>
+            <input type="text" id="input-title" placeholder="Aula 1">
+          </div>
+          <button id="btn-create" onclick="createLink()">Criar</button>
         </div>
-        <div class="form-group">
-          <label>Slug (opcional)</label>
-          <input type="text" id="input-slug" placeholder="meu-link">
-        </div>
-        <div class="form-group">
-          <label>Título (opcional)</label>
-          <input type="text" id="input-title" placeholder="Aula 1">
-        </div>
-        <button id="btn-create" onclick="createLink()">Criar</button>
       </div>
-    </div>
-    
-    <!-- Links List -->
-    <div class="links-section">
-      <div class="section-header">
-        <h3 class="section-title">📋 Seus links</h3>
-        <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
-      </div>
-      <div class="links-list" id="links-list">
-        <div class="empty-state">
-          <div class="loading"></div>
-          <p style="margin-top:16px">Carregando links...</p>
+      
+      <!-- Links List -->
+      <div class="links-section">
+        <div class="section-header">
+          <h3 class="section-title">📋 Seus links</h3>
+          <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
+        </div>
+        <div class="links-list" id="links-list">
+          <div class="empty-state">
+            <div class="loading"></div>
+            <p style="margin-top:16px">Carregando links...</p>
+          </div>
         </div>
       </div>
     </div>
@@ -444,6 +579,88 @@
 
   <script>
     const API_BASE = window.location.origin;
+    
+    // Emails autorizados
+    const ALLOWED_EMAILS = [
+      'ataliabs1983@gmail.com',
+      'bineryefi@gmail.com',
+      'ruanf195@gmail.com',
+      'enilson.lenyn@gmail.com',
+      'danielle.antunes@gmail.com'
+    ];
+    
+    // Senha padrão
+    const PASSWORD = 'senha@12345';
+    
+    // Verifica sessão salva
+    function checkSession() {
+      const session = localStorage.getItem('linkadmin_session');
+      if (session) {
+        const { email, expires } = JSON.parse(session);
+        if (Date.now() < expires && ALLOWED_EMAILS.includes(email.toLowerCase())) {
+          showAdmin(email);
+          return;
+        }
+        localStorage.removeItem('linkadmin_session');
+      }
+      showLogin();
+    }
+    
+    // Login
+    function login() {
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      
+      errorEl.style.display = 'none';
+      
+      if (!email || !password) {
+        errorEl.textContent = 'Preencha email e senha';
+        errorEl.style.display = 'block';
+        return;
+      }
+      
+      if (!ALLOWED_EMAILS.includes(email)) {
+        errorEl.textContent = 'Email não autorizado';
+        errorEl.style.display = 'block';
+        return;
+      }
+      
+      if (password !== PASSWORD) {
+        errorEl.textContent = 'Senha incorreta';
+        errorEl.style.display = 'block';
+        return;
+      }
+      
+      // Salva sessão (24 horas)
+      const session = {
+        email: email,
+        expires: Date.now() + (24 * 60 * 60 * 1000)
+      };
+      localStorage.setItem('linkadmin_session', JSON.stringify(session));
+      
+      showAdmin(email);
+    }
+    
+    // Logout
+    function logout() {
+      localStorage.removeItem('linkadmin_session');
+      showLogin();
+    }
+    
+    // Mostra login
+    function showLogin() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-panel').style.display = 'none';
+    }
+    
+    // Mostra painel
+    function showAdmin(email) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('user-email').textContent = email;
+      loadLinks();
+    }
     
     // Toast notification
     function showToast(message, isError = false) {
@@ -642,15 +859,23 @@
       if (e.target.id === 'stats-modal') closeModal();
     });
     
-    // Enter key to create
-    document.querySelectorAll('input').forEach(input => {
+    // Enter key handlers
+    document.getElementById('login-email').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') document.getElementById('login-password').focus();
+    });
+    
+    document.getElementById('login-password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+    
+    document.querySelectorAll('#admin-panel input').forEach(input => {
       input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') createLink();
       });
     });
     
-    // Initial load
-    loadLinks();
+    // Inicial
+    checkSession();
   </script>
 </body>
 </html>
