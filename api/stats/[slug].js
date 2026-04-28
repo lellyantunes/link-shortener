@@ -1,8 +1,15 @@
 const { supabase } = require('../../lib/supabase');
 
+// Extrai domínio do host
+function getDomain(req) {
+  const host = req.headers.host || req.headers['x-forwarded-host'] || '';
+  return host.replace(/:\d+$/, '');
+}
+
 module.exports = async (req, res) => {
   const { slug } = req.query;
   const { days = 30 } = req.query;
+  const domain = getDomain(req);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -13,11 +20,12 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Busca o link
+    // Busca o link (verificando domínio)
     const { data: link, error: linkError } = await supabase
       .from('links')
       .select('*')
       .eq('slug', slug)
+      .eq('domain', domain)
       .single();
 
     if (linkError || !link) {
