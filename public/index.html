@@ -14,7 +14,6 @@
       color: #fff;
     }
     
-    /* Login Screen */
     .login-screen {
       min-height: 100vh;
       display: flex;
@@ -33,15 +32,8 @@
       text-align: center;
     }
     
-    .login-box h1 {
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
-    
-    .login-box p {
-      color: #888;
-      margin-bottom: 32px;
-    }
+    .login-box h1 { font-size: 28px; margin-bottom: 8px; }
+    .login-box p { color: #888; margin-bottom: 32px; }
     
     .login-box input {
       width: 100%;
@@ -54,10 +46,7 @@
       margin-bottom: 16px;
     }
     
-    .login-box input:focus {
-      outline: none;
-      border-color: #3b82f6;
-    }
+    .login-box input:focus { outline: none; border-color: #3b82f6; }
     
     .login-box button {
       width: 100%;
@@ -69,12 +58,9 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
     }
     
-    .login-box button:hover {
-      background: #2563eb;
-    }
+    .login-box button:hover { background: #2563eb; }
     
     .login-error {
       background: rgba(239, 68, 68, 0.1);
@@ -87,16 +73,9 @@
       display: none;
     }
     
-    /* Admin Panel */
-    .admin-panel {
-      display: none;
-    }
+    .admin-panel { display: none; }
     
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
     
     header {
       display: flex;
@@ -107,23 +86,10 @@
       gap: 16px;
     }
     
-    h1 {
-      font-size: 28px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    h1 { font-size: 28px; display: flex; align-items: center; gap: 12px; }
     
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    
-    .user-info {
-      font-size: 14px;
-      color: #888;
-    }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .user-info { font-size: 14px; color: #888; }
     
     .btn-logout {
       background: transparent;
@@ -133,35 +99,23 @@
       border-radius: 8px;
       font-size: 14px;
       cursor: pointer;
-      transition: all 0.2s;
     }
     
-    .btn-logout:hover {
-      background: #ef4444;
-      color: #fff;
-    }
+    .btn-logout:hover { background: #ef4444; color: #fff; }
     
-    .stats-bar {
-      display: flex;
-      gap: 24px;
-    }
-    
-    .stat {
-      text-align: center;
-    }
-    
-    .stat-value {
-      font-size: 24px;
-      font-weight: bold;
-      color: #3b82f6;
-    }
-    
-    .stat-label {
+    .domain-badge {
+      background: #3b82f6;
+      padding: 4px 12px;
+      border-radius: 20px;
       font-size: 12px;
-      color: #666;
+      font-weight: 500;
     }
     
-    /* Form */
+    .stats-bar { display: flex; gap: 24px; }
+    .stat { text-align: center; }
+    .stat-value { font-size: 24px; font-weight: bold; color: #3b82f6; }
+    .stat-label { font-size: 12px; color: #666; }
+    
     .create-form {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       border-radius: 16px;
@@ -170,11 +124,7 @@
       border: 1px solid #2a2a4a;
     }
     
-    .form-title {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #fff;
-    }
+    .form-title { font-size: 18px; margin-bottom: 20px; color: #fff; }
     
     .form-row {
       display: grid;
@@ -183,17 +133,9 @@
       align-items: end;
     }
     
-    @media (max-width: 768px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
     
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
     
     label {
       font-size: 12px;
@@ -209,17 +151,10 @@
       padding: 12px 16px;
       color: #fff;
       font-size: 14px;
-      transition: border-color 0.2s;
     }
     
-    input:focus {
-      outline: none;
-      border-color: #3b82f6;
-    }
-    
-    input::placeholder {
-      color: #555;
-    }
+    input:focus { outline: none; border-color: #3b82f6; }
+    input::placeholder { color: #555; }
     
     button {
       background: #3b82f6;
@@ -230,20 +165,12 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
       white-space: nowrap;
     }
     
-    button:hover {
-      background: #2563eb;
-    }
+    button:hover { background: #2563eb; }
+    button:disabled { background: #333; cursor: not-allowed; }
     
-    button:disabled {
-      background: #333;
-      cursor: not-allowed;
-    }
-    
-    /* Links table */
     .links-section {
       background: #1a1a2e;
       border-radius: 16px;
@@ -259,10 +186,7 @@
       align-items: center;
     }
     
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
+    .section-title { font-size: 16px; font-weight: 600; }
     
     .refresh-btn {
       background: transparent;
@@ -271,14 +195,9 @@
       font-size: 12px;
     }
     
-    .refresh-btn:hover {
-      background: #2a2a4a;
-    }
+    .refresh-btn:hover { background: #2a2a4a; }
     
-    .links-list {
-      max-height: 500px;
-      overflow-y: auto;
-    }
+    .links-list { max-height: 500px; overflow-y: auto; }
     
     .link-item {
       display: grid;
@@ -287,19 +206,11 @@
       padding: 16px 24px;
       border-bottom: 1px solid #2a2a4a;
       align-items: center;
-      transition: background 0.2s;
     }
     
-    .link-item:hover {
-      background: rgba(59, 130, 246, 0.05);
-    }
+    .link-item:hover { background: rgba(59, 130, 246, 0.05); }
     
-    @media (max-width: 768px) {
-      .link-item {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-    }
+    @media (max-width: 768px) { .link-item { grid-template-columns: 1fr; gap: 8px; } }
     
     .link-slug {
       font-weight: 600;
@@ -309,9 +220,7 @@
       text-decoration: none;
     }
     
-    .link-slug:hover {
-      text-decoration: underline;
-    }
+    .link-slug:hover { text-decoration: underline; }
     
     .link-destination {
       color: #888;
@@ -330,56 +239,19 @@
       font-weight: 500;
     }
     
-    .link-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .link-actions { display: flex; gap: 8px; }
     
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 6px;
-    }
+    .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+    .btn-copy { background: #10b981; }
+    .btn-copy:hover { background: #059669; }
+    .btn-delete { background: #ef4444; }
+    .btn-delete:hover { background: #dc2626; }
+    .btn-stats { background: #8b5cf6; }
+    .btn-stats:hover { background: #7c3aed; }
     
-    .btn-copy {
-      background: #10b981;
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
     
-    .btn-copy:hover {
-      background: #059669;
-    }
-    
-    .btn-delete {
-      background: #ef4444;
-    }
-    
-    .btn-delete:hover {
-      background: #dc2626;
-    }
-    
-    .btn-stats {
-      background: #8b5cf6;
-    }
-    
-    .btn-stats:hover {
-      background: #7c3aed;
-    }
-    
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #666;
-    }
-    
-    .empty-state svg {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
-    
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -395,22 +267,12 @@
       z-index: 1000;
     }
     
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: #ef4444; }
     
-    .toast.error {
-      background: #ef4444;
-    }
-    
-    /* Modal */
     .modal {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.8);
       display: none;
       align-items: center;
@@ -418,9 +280,7 @@
       z-index: 1000;
     }
     
-    .modal.show {
-      display: flex;
-    }
+    .modal.show { display: flex; }
     
     .modal-content {
       background: #1a1a2e;
@@ -448,11 +308,7 @@
       padding: 0;
     }
     
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     
     .stats-card {
       background: #0f0f1a;
@@ -461,19 +317,9 @@
       text-align: center;
     }
     
-    .stats-card-value {
-      font-size: 28px;
-      font-weight: bold;
-      color: #3b82f6;
-    }
+    .stats-card-value { font-size: 28px; font-weight: bold; color: #3b82f6; }
+    .stats-card-label { font-size: 12px; color: #666; margin-top: 4px; }
     
-    .stats-card-label {
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-    }
-    
-    /* Loading */
     .loading {
       display: inline-block;
       width: 20px;
@@ -484,32 +330,29 @@
       animation: spin 0.8s linear infinite;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   
-  <!-- Login Screen -->
   <div class="login-screen" id="login-screen">
     <div class="login-box">
       <h1>🔗 Link Shortener</h1>
       <p>Faça login para acessar o painel</p>
-      
       <div class="login-error" id="login-error"></div>
-      
       <input type="email" id="login-email" placeholder="Seu email">
       <input type="password" id="login-password" placeholder="Senha">
       <button onclick="login()">Entrar</button>
     </div>
   </div>
   
-  <!-- Admin Panel -->
   <div class="admin-panel" id="admin-panel">
     <div class="container">
       <header>
-        <h1>🔗 Link Shortener</h1>
+        <div>
+          <h1>🔗 Link Shortener</h1>
+          <span class="domain-badge" id="current-domain"></span>
+        </div>
         <div class="header-right">
           <span class="user-info" id="user-email"></span>
           <button class="btn-logout" onclick="logout()">Sair</button>
@@ -527,7 +370,6 @@
         </div>
       </div>
       
-      <!-- Create Form -->
       <div class="create-form">
         <h2 class="form-title">✨ Criar novo link</h2>
         <div class="form-row">
@@ -547,10 +389,9 @@
         </div>
       </div>
       
-      <!-- Links List -->
       <div class="links-section">
         <div class="section-header">
-          <h3 class="section-title">📋 Seus links</h3>
+          <h3 class="section-title">📋 Links deste domínio</h3>
           <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
         </div>
         <div class="links-list" id="links-list">
@@ -563,10 +404,8 @@
     </div>
   </div>
   
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
   
-  <!-- Stats Modal -->
   <div class="modal" id="stats-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -579,8 +418,8 @@
 
   <script>
     const API_BASE = window.location.origin;
+    const CURRENT_DOMAIN = window.location.host;
     
-    // Emails autorizados
     const ALLOWED_EMAILS = [
       'ataliabs1983@gmail.com',
       'bineryefi@gmail.com',
@@ -589,10 +428,8 @@
       'danielle.antunes@gmail.com'
     ];
     
-    // Senha padrão
     const PASSWORD = 'senha@12345';
     
-    // Verifica sessão salva
     function checkSession() {
       const session = localStorage.getItem('linkadmin_session');
       if (session) {
@@ -606,7 +443,6 @@
       showLogin();
     }
     
-    // Login
     function login() {
       const email = document.getElementById('login-email').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
@@ -632,7 +468,6 @@
         return;
       }
       
-      // Salva sessão (24 horas)
       const session = {
         email: email,
         expires: Date.now() + (24 * 60 * 60 * 1000)
@@ -642,27 +477,24 @@
       showAdmin(email);
     }
     
-    // Logout
     function logout() {
       localStorage.removeItem('linkadmin_session');
       showLogin();
     }
     
-    // Mostra login
     function showLogin() {
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('admin-panel').style.display = 'none';
     }
     
-    // Mostra painel
     function showAdmin(email) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('admin-panel').style.display = 'block';
       document.getElementById('user-email').textContent = email;
+      document.getElementById('current-domain').textContent = CURRENT_DOMAIN;
       loadLinks();
     }
     
-    // Toast notification
     function showToast(message, isError = false) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -670,7 +502,6 @@
       setTimeout(() => toast.className = 'toast', 3000);
     }
     
-    // Load all links
     async function loadLinks() {
       try {
         const res = await fetch(`${API_BASE}/api/links`);
@@ -678,7 +509,7 @@
         
         document.getElementById('total-links').textContent = data.total || 0;
         
-        const totalClicks = data.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+        const totalClicks = (data.links || []).reduce((sum, link) => sum + (link.clicks || 0), 0);
         document.getElementById('total-clicks').textContent = totalClicks;
         
         const listEl = document.getElementById('links-list');
@@ -721,7 +552,6 @@
       }
     }
     
-    // Create new link
     async function createLink() {
       const url = document.getElementById('input-url').value.trim();
       const slug = document.getElementById('input-slug').value.trim();
@@ -745,22 +575,17 @@
         
         const data = await res.json();
         
-        if (!res.ok) {
-          throw new Error(data.error || 'Erro ao criar');
-        }
+        if (!res.ok) throw new Error(data.error || 'Erro ao criar');
         
         showToast(`Link criado: ${data.link.short_url}`);
         
-        // Clear form
         document.getElementById('input-url').value = '';
         document.getElementById('input-slug').value = '';
         document.getElementById('input-title').value = '';
         
-        // Reload list
         loadLinks();
         
       } catch (err) {
-        console.error(err);
         showToast(err.message, true);
       } finally {
         btn.disabled = false;
@@ -768,32 +593,24 @@
       }
     }
     
-    // Copy link to clipboard
     function copyLink(url) {
       navigator.clipboard.writeText(url);
       showToast('Link copiado!');
     }
     
-    // Delete link
     async function deleteLink(slug) {
       if (!confirm(`Tem certeza que quer deletar /${slug}?`)) return;
       
       try {
-        const res = await fetch(`${API_BASE}/api/link/${slug}`, {
-          method: 'DELETE'
-        });
-        
+        const res = await fetch(`${API_BASE}/api/link/${slug}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Erro ao deletar');
-        
         showToast('Link removido');
         loadLinks();
-        
       } catch (err) {
         showToast('Erro ao deletar', true);
       }
     }
     
-    // Show stats modal
     async function showStats(slug) {
       const modal = document.getElementById('stats-modal');
       const content = document.getElementById('stats-content');
@@ -804,7 +621,6 @@
       try {
         const res = await fetch(`${API_BASE}/api/stats/${slug}?days=30`);
         const data = await res.json();
-        
         const stats = data.stats;
         
         content.innerHTML = `
@@ -844,7 +660,6 @@
             `).join('') || '<div style="color:#666;padding:8px 0">Sem dados</div>'}
           </div>
         `;
-        
       } catch (err) {
         content.innerHTML = '<p style="color:#ef4444;text-align:center">Erro ao carregar estatísticas</p>';
       }
@@ -854,12 +669,10 @@
       document.getElementById('stats-modal').classList.remove('show');
     }
     
-    // Close modal on click outside
     document.getElementById('stats-modal').addEventListener('click', (e) => {
       if (e.target.id === 'stats-modal') closeModal();
     });
     
-    // Enter key handlers
     document.getElementById('login-email').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') document.getElementById('login-password').focus();
     });
@@ -874,7 +687,6 @@
       });
     });
     
-    // Inicial
     checkSession();
   </script>
 </body>
