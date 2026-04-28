@@ -1,7 +1,14 @@
 const { supabase } = require('../../lib/supabase');
 
+// Extrai domínio do host
+function getDomain(req) {
+  const host = req.headers.host || req.headers['x-forwarded-host'] || '';
+  return host.replace(/:\d+$/, '');
+}
+
 module.exports = async (req, res) => {
   const { slug } = req.query;
+  const domain = getDomain(req);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -14,6 +21,7 @@ module.exports = async (req, res) => {
         .from('links')
         .select('*')
         .eq('slug', slug)
+        .eq('domain', domain)
         .single();
 
       if (error || !link) {
@@ -30,7 +38,7 @@ module.exports = async (req, res) => {
         success: true,
         link: {
           ...link,
-          short_url: `https://${req.headers.host}/${link.slug}`,
+          short_url: `https://${domain}/${link.slug}`,
           clicks: clicks || 0
         }
       });
@@ -48,6 +56,7 @@ module.exports = async (req, res) => {
         .from('links')
         .select('id')
         .eq('slug', slug)
+        .eq('domain', domain)
         .single();
 
       if (findError || !link) {
@@ -57,7 +66,8 @@ module.exports = async (req, res) => {
       const { error } = await supabase
         .from('links')
         .delete()
-        .eq('slug', slug);
+        .eq('slug', slug)
+        .eq('domain', domain);
 
       if (error) throw error;
 
@@ -85,6 +95,7 @@ module.exports = async (req, res) => {
         .from('links')
         .update(updateData)
         .eq('slug', slug)
+        .eq('domain', domain)
         .select()
         .single();
 
@@ -94,7 +105,7 @@ module.exports = async (req, res) => {
         success: true,
         link: {
           ...data,
-          short_url: `https://${req.headers.host}/${data.slug}`
+          short_url: `https://${domain}/${data.slug}`
         }
       });
 
