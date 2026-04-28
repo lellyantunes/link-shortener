@@ -14,9 +14,7 @@ function getDevice(userAgent) {
   return 'desktop';
 }
 
-// Extrai país do header ou IP (simplificado)
 function getCountry(req) {
-  // Vercel/Cloudflare adicionam esses headers
   return req.headers['x-vercel-ip-country'] || 
          req.headers['cf-ipcountry'] || 
          null;
@@ -44,7 +42,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Busca o link
+    // Busca o link (slug é único globalmente)
     const { data: link, error } = await supabase
       .from('links')
       .select('id, destination_url')
