@@ -1,6 +1,5 @@
 const { supabase } = require('../../lib/supabase');
 
-// Detecta dispositivo a partir do User-Agent
 function getDevice(userAgent) {
   if (!userAgent) return 'unknown';
   userAgent = userAgent.toLowerCase();
@@ -33,16 +32,63 @@ function getIP(req) {
          null;
 }
 
+// Garante URL absoluta
+function ensureAbsoluteUrl(url) {
+  if (!url) return url;
+  if (!url.match(/^https?:\/\//i)) {
+    return 'https://' + url;
+  }
+  return url;
+}
+
+// Converte YouTube para formato que abre no app
+function convertToAppUrl(url) {
+  // Padrões de YouTube que precisam converter pra youtu.be
+  const youtubePatterns = [
+    // youtube.com/watch?v=VIDEO_ID
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+    // youtube.com/watch?v=VIDEO_ID&outros_params
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})/,
+    // youtube.com/v/VIDEO_ID
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+    // youtube.com/embed/VIDEO_ID
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    // youtube.com/shorts/VIDEO_ID
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+  ];
+  
+  for (const pattern of youtubePatterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      // Converte pra youtu.be que abre no app
+      return `https://youtu.be/${match[1]}`;
+    }
+  }
+  
+  // Se já é youtu.be, mantém
+  const youtubeShort = url.match(/(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (youtubeShort) {
+    return `https://youtu.be/${youtubeShort[1]}`;
+  }
+  
+  // Não é YouTube, retorna original
+  return url;
+}
+
 module.exports = async (req, res) => {
   const { slug } = req.query;
 
-  // Ignora favicons e arquivos
-  if (slug.includes('.') || slug === 'favicon') {
+  if (slug.includes('.') && !slug.includes('/')) {
+    if (slug.match(/\.(ico|png|jpg|css|js)$/)) {
+      return res.status(404).end();
+    }
+  }
+
+  if (slug === 'favicon') {
     return res.status(404).end();
   }
 
   try {
-    // Busca o link (slug é único globalmente)
     const { data: link, error } = await supabase
       .from('links')
       .select('id, destination_url')
@@ -62,7 +108,7 @@ module.exports = async (req, res) => {
       `);
     }
 
-    // Registra o clique (async, não bloqueia o redirect)
+    // Registra clique
     const clickData = {
       link_id: link.id,
       ip: getIP(req),
@@ -73,11 +119,16 @@ module.exports = async (req, res) => {
       device: getDevice(req.headers['user-agent'])
     };
 
-    // Não espera salvar, redireciona imediato
     supabase.from('clicks').insert(clickData).then(() => {}).catch(console.error);
 
-    // Redirect 302 (temporário)
-    return res.redirect(302, link.destination_url);
+    // Garante URL absoluta
+    let destinationUrl = ensureAbsoluteUrl(link.destination_url);
+    
+    // Converte YouTube pra formato que abre no app
+    destinationUrl = convertToAppUrl(destinationUrl);
+
+    // Redirect 302
+    return res.redirect(302, destinationUrl);
 
   } catch (error) {
     console.error('Erro no redirect:', error);
