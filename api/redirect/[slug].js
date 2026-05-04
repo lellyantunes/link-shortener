@@ -51,29 +51,39 @@ module.exports = async (req, res) => {
     var url = link.destination_url;
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-    // Se é YouTube, tenta forçar o app
+    // Se é YouTube em mobile, usa página estilo Sendflow
     var ytId = getYouTubeId(url);
-    if (ytId) {
-      if (device === 'android') {
-        // Android Intent: tenta abrir o app, se não tiver vai pro navegador
-        // O formato 'intent://' é o mais robusto para Android
-        const intentUrl = `intent://www.youtube.com/watch?v=${ytId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-        return res.redirect(302, intentUrl);
-      } 
+    if (ytId && (device === 'ios' || device === 'android' || device === 'mobile')) {
+      var ytUrl = 'https://www.youtube.com/watch?v=' + ytId;
       
-      if (device === 'ios') {
-        // iOS: youtube:// funciona bem se o app estiver instalado
-        const iosUrl = `youtube://www.youtube.com/watch?v=${ytId}`;
-        // Como o redirecionamento direto para esquema pode falhar se o app não existir,
-        // o ideal em produção seria uma página JS, mas aqui aplicamos o Deep Link direto
-        return res.redirect(302, iosUrl);
-      }
-
-      // Fallback para desktop ou outros
-      url = 'https://youtu.be/' + ytId;
+      var html = '<!DOCTYPE html>' +
+        '<html lang="pt-br">' +
+        '<head>' +
+        '<meta charset="UTF-8">' +
+        '<meta http-equiv="refresh" content="4; URL=\'' + ytUrl + '\'" />' +
+        '<meta http-equiv="refresh" content="1; URL=\'' + ytUrl + '\'" />' +
+        '<meta name="apple-mobile-web-app-capable" content="yes" />' +
+        '<meta name="mobile-web-app-capable" content="yes" />' +
+        '</head>' +
+        '<body>' +
+        '<script>' +
+        'setTimeout(function(){' +
+        'var u="' + ytUrl + '";' +
+        'window.location.replace(u);' +
+        'setTimeout(function(){window.location.replace(u);},500);' +
+        '},100);' +
+        '</script>' +
+        '</body>' +
+        '</html>';
+      
+      return res.status(200).send(html);
     }
 
-    // Redirect padrão
+    // Desktop ou outros: redirect normal
+    if (ytId) {
+      url = 'https://youtu.be/' + ytId;
+    }
+    
     return res.redirect(302, url);
 
   } catch (e) {
