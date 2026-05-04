@@ -52,6 +52,22 @@ function isAndroid(userAgent) {
   return userAgent.toLowerCase().includes('android');
 }
 
+async function saveClick(linkId, req) {
+  try {
+    await supabase.from('clicks').insert({
+      link_id: linkId,
+      ip: getIP(req),
+      user_agent: req.headers['user-agent'] || null,
+      referer: req.headers['referer'] || null,
+      country: getCountry(req),
+      city: getCity(req),
+      device: getDevice(req.headers['user-agent'])
+    });
+  } catch (e) {
+    console.error('Click error:', e);
+  }
+}
+
 module.exports = async (req, res) => {
   const { slug } = req.query;
 
@@ -70,16 +86,8 @@ module.exports = async (req, res) => {
       return res.status(404).send('Link nao encontrado: ' + slug);
     }
 
-    // Registra clique
-    supabase.from('clicks').insert({
-      link_id: link.id,
-      ip: getIP(req),
-      user_agent: req.headers['user-agent'] || null,
-      referer: req.headers['referer'] || null,
-      country: getCountry(req),
-      city: getCity(req),
-      device: getDevice(req.headers['user-agent'])
-    }).catch(function(e) { console.error(e); });
+    // Registra clique (não bloqueia)
+    saveClick(link.id, req);
 
     var destinationUrl = ensureAbsoluteUrl(link.destination_url);
     var userAgent = req.headers['user-agent'] || '';
