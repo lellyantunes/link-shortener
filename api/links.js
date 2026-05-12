@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
 
     } catch (error) {
       console.error('Erro ao criar link:', error);
-      return res.status(500).json({ error: 'Erro ao criar link' });
+      return res.status(500).json({ error: 'Erro ao criar link', details: error.message });
     }
   }
 
@@ -91,11 +91,11 @@ module.exports = async (req, res) => {
     try {
       const { limit = 100, offset = 0, folder } = req.query;
 
+      // Busca links do domínio atual
       let query = supabase
         .from('links')
         .select('*', { count: 'exact' })
         .eq('domain', domain)
-        .order('folder', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (folder && folder !== 'Todas') {
@@ -105,17 +105,30 @@ module.exports = async (req, res) => {
       const { data, error, count } = await query
         .range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro na query links:', error);
+        return res.status(500).json({ 
+          error: 'Erro ao buscar links', 
+          details: error.message,
+          domain: domain 
+        });
+      }
 
       // Busca pastas da tabela folders
-      const { data: foldersData } = await supabase
+      const { data: foldersData, error: foldersError } = await supabase
         .from('folders')
         .select('name')
         .eq('domain', domain)
         .order('name', { ascending: true });
 
-      const folders = (foldersData || []).map(f => f.name);
+      if (foldersError) {
+        console.error('Erro na query folders:', foldersError);
+      }
 
+      const folders = (foldersData || []).map(f => f.name);
+      if (!folders.includes('Geral')) folders.unshift('Geral');
+
+      // Conta cliques para cada link
       const linksWithStats = await Promise.all(
         (data || []).map(async (link) => {
           const { count: clicks } = await supabase
@@ -141,7 +154,11 @@ module.exports = async (req, res) => {
 
     } catch (error) {
       console.error('Erro ao listar links:', error);
-      return res.status(500).json({ error: 'Erro ao listar links' });
+      return res.status(500).json({ 
+        error: 'Erro ao listar links', 
+        details: error.message,
+        stack: error.stack 
+      });
     }
   }
 
