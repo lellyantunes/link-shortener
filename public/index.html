@@ -6,249 +6,68 @@
   <title>Admin - Link Shortener</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f0f1a;
-      min-height: 100vh;
-      color: #fff;
-    }
-    
-    .login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    .login-box {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border-radius: 16px;
-      padding: 40px;
-      max-width: 400px;
-      width: 100%;
-      border: 1px solid #2a2a4a;
-      text-align: center;
-    }
-    
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f1a; min-height: 100vh; color: #fff; }
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-box { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; padding: 40px; max-width: 400px; width: 100%; border: 1px solid #2a2a4a; text-align: center; }
     .login-box h1 { font-size: 28px; margin-bottom: 8px; }
     .login-box p { color: #888; margin-bottom: 32px; }
-    
-    .login-box input, .login-box select {
-      width: 100%;
-      background: #0f0f1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px 16px;
-      color: #fff;
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
-    
+    .login-box input { width: 100%; background: #0f0f1a; border: 1px solid #333; border-radius: 8px; padding: 14px 16px; color: #fff; font-size: 16px; margin-bottom: 16px; }
     .login-box input:focus { outline: none; border-color: #3b82f6; }
-    
-    .login-box button {
-      width: 100%;
-      background: #3b82f6;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 14px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
+    .login-box button { width: 100%; background: #3b82f6; color: #fff; border: none; border-radius: 8px; padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; }
     .login-box button:hover { background: #2563eb; }
-    
-    .login-error {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      display: none;
-    }
-    
+    .login-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
     .admin-panel { display: none; }
-    
     .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-    
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 16px; }
     h1 { font-size: 28px; display: flex; align-items: center; gap: 12px; }
-    
     .header-right { display: flex; align-items: center; gap: 16px; }
     .user-info { font-size: 14px; color: #888; }
-    
-    .btn-logout {
-      background: transparent;
-      border: 1px solid #ef4444;
-      color: #ef4444;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    
+    .btn-logout { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; }
     .btn-logout:hover { background: #ef4444; color: #fff; }
-    
-    .domain-badge {
-      background: #3b82f6;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    
+    .domain-badge { background: #3b82f6; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
     .stats-bar { display: flex; gap: 24px; }
     .stat { text-align: center; }
     .stat-value { font-size: 24px; font-weight: bold; color: #3b82f6; }
     .stat-label { font-size: 12px; color: #666; }
-    
-    .create-form {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 32px;
-      border: 1px solid #2a2a4a;
-    }
-    
+    .create-form { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; padding: 24px; margin-bottom: 32px; border: 1px solid #2a2a4a; }
     .form-title { font-size: 18px; margin-bottom: 20px; color: #fff; }
-    
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 150px 150px 150px auto;
-      gap: 12px;
-      align-items: end;
-    }
-    
+    .form-row { display: grid; grid-template-columns: 1fr 150px 150px 150px auto; gap: 12px; align-items: end; }
     @media (max-width: 900px) { .form-row { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-    
     .form-group { display: flex; flex-direction: column; gap: 6px; }
-    
-    label {
-      font-size: 12px;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    input, select {
-      background: #0f0f1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: #fff;
-      font-size: 14px;
-    }
-    
+    label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select { background: #0f0f1a; border: 1px solid #333; border-radius: 8px; padding: 12px 16px; color: #fff; font-size: 14px; }
     input:focus, select:focus { outline: none; border-color: #3b82f6; }
     input::placeholder { color: #555; }
-    
-    button {
-      background: #3b82f6;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 24px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    
+    button { background: #3b82f6; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
     button:hover { background: #2563eb; }
     button:disabled { background: #333; cursor: not-allowed; }
-    
-    .folders-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    
-    .folder-tab {
-      background: #1a1a2e;
-      border: 1px solid #2a2a4a;
-      color: #888;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
+    .folders-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+    .folder-tab { background: #1a1a2e; border: 1px solid #2a2a4a; color: #888; padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
     .folder-tab:hover { border-color: #3b82f6; color: #fff; }
     .folder-tab.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
-    .folder-tab .count { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 6px; }
-    
+    .folder-tab .count { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .folder-tab .delete-folder { background: none; border: none; color: inherit; padding: 0; margin-left: 4px; cursor: pointer; opacity: 0.6; font-size: 14px; }
+    .folder-tab .delete-folder:hover { opacity: 1; }
     .new-folder-input { display: flex; gap: 8px; align-items: center; }
     .new-folder-input input { padding: 8px 12px; font-size: 13px; width: 150px; }
     .new-folder-input button { padding: 8px 12px; font-size: 13px; }
-    
-    .links-section {
-      background: #1a1a2e;
-      border-radius: 16px;
-      border: 1px solid #2a2a4a;
-      overflow: hidden;
-    }
-    
-    .section-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #2a2a4a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
+    .links-section { background: #1a1a2e; border-radius: 16px; border: 1px solid #2a2a4a; overflow: hidden; }
+    .section-header { padding: 20px 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center; }
     .section-title { font-size: 16px; font-weight: 600; }
-    
-    .refresh-btn {
-      background: transparent;
-      border: 1px solid #333;
-      padding: 8px 16px;
-      font-size: 12px;
-    }
-    
+    .refresh-btn { background: transparent; border: 1px solid #333; padding: 8px 16px; font-size: 12px; }
     .refresh-btn:hover { background: #2a2a4a; }
-    
     .links-list { max-height: 600px; overflow-y: auto; }
-    
     .folder-group { border-bottom: 1px solid #2a2a4a; }
     .folder-header { background: #16213e; padding: 12px 24px; font-size: 14px; font-weight: 600; color: #3b82f6; display: flex; align-items: center; gap: 8px; }
-    
-    .link-item {
-      display: grid;
-      grid-template-columns: 1fr 2fr auto auto;
-      gap: 16px;
-      padding: 16px 24px;
-      border-bottom: 1px solid #2a2a4a;
-      align-items: center;
-    }
-    
+    .link-item { display: grid; grid-template-columns: 1fr 2fr auto auto; gap: 16px; padding: 16px 24px; border-bottom: 1px solid #2a2a4a; align-items: center; }
     .link-item:hover { background: rgba(59, 130, 246, 0.05); }
-    
     @media (max-width: 768px) { .link-item { grid-template-columns: 1fr; gap: 8px; } }
-    
     .link-slug { font-weight: 600; color: #3b82f6; font-family: monospace; font-size: 14px; text-decoration: none; }
     .link-slug:hover { text-decoration: underline; }
     .link-destination { color: #888; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .link-clicks { display: flex; align-items: center; gap: 6px; color: #10b981; font-size: 14px; font-weight: 500; }
     .link-actions { display: flex; gap: 8px; }
-    
     .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
     .btn-copy { background: #10b981; }
     .btn-copy:hover { background: #059669; }
@@ -258,83 +77,30 @@
     .btn-delete:hover { background: #dc2626; }
     .btn-stats { background: #8b5cf6; }
     .btn-stats:hover { background: #7c3aed; }
-    
     .empty-state { text-align: center; padding: 60px 20px; color: #666; }
-    
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #10b981;
-      color: #fff;
-      padding: 16px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s;
-      z-index: 1000;
-    }
-    
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: #fff; padding: 16px 24px; border-radius: 8px; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.error { background: #ef4444; }
-    
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    
+    .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal.show { display: flex; }
-    
-    .modal-content {
-      background: #1a1a2e;
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: #666;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 0;
-    }
-    
+    .modal-content { background: #1a1a2e; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-close { background: transparent; border: none; color: #666; font-size: 24px; cursor: pointer; padding: 0; }
     .modal-form .form-group { margin-bottom: 16px; }
     .modal-form input, .modal-form select { width: 100%; }
     .modal-form .btn-row { display: flex; gap: 12px; margin-top: 24px; }
     .modal-form .btn-row button { flex: 1; }
     .btn-cancel { background: #666; }
     .btn-cancel:hover { background: #555; }
-    
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .stats-card { background: #0f0f1a; padding: 16px; border-radius: 8px; text-align: center; }
     .stats-card-value { font-size: 28px; font-weight: bold; color: #3b82f6; }
     .stats-card-label { font-size: 12px; color: #666; margin-top: 4px; }
-    
     .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #333; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-  
   <div class="login-screen" id="login-screen">
     <div class="login-box">
       <h1>🔗 Link Shortener</h1>
@@ -360,48 +126,23 @@
       </header>
       
       <div class="stats-bar" style="margin-bottom: 32px;">
-        <div class="stat">
-          <div class="stat-value" id="total-links">-</div>
-          <div class="stat-label">Links</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value" id="total-clicks">-</div>
-          <div class="stat-label">Cliques</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value" id="total-folders">-</div>
-          <div class="stat-label">Pastas</div>
-        </div>
+        <div class="stat"><div class="stat-value" id="total-links">-</div><div class="stat-label">Links</div></div>
+        <div class="stat"><div class="stat-value" id="total-clicks">-</div><div class="stat-label">Cliques</div></div>
+        <div class="stat"><div class="stat-value" id="total-folders">-</div><div class="stat-label">Pastas</div></div>
       </div>
       
       <div class="create-form">
         <h2 class="form-title">✨ Criar novo link</h2>
         <div class="form-row">
-          <div class="form-group">
-            <label>URL de destino *</label>
-            <input type="url" id="input-url" placeholder="https://youtube.com/watch?v=..." required>
-          </div>
-          <div class="form-group">
-            <label>Slug</label>
-            <input type="text" id="input-slug" placeholder="meu-link">
-          </div>
-          <div class="form-group">
-            <label>Título</label>
-            <input type="text" id="input-title" placeholder="Aula 1">
-          </div>
-          <div class="form-group">
-            <label>Pasta</label>
-            <select id="input-folder">
-              <option value="Geral">Geral</option>
-            </select>
-          </div>
+          <div class="form-group"><label>URL de destino *</label><input type="url" id="input-url" placeholder="https://youtube.com/watch?v=..." required></div>
+          <div class="form-group"><label>Slug</label><input type="text" id="input-slug" placeholder="meu-link"></div>
+          <div class="form-group"><label>Título</label><input type="text" id="input-title" placeholder="Aula 1"></div>
+          <div class="form-group"><label>Pasta</label><select id="input-folder"><option value="Geral">Geral</option></select></div>
           <button id="btn-create" onclick="createLink()">Criar</button>
         </div>
       </div>
       
-      <div class="folders-bar" id="folders-bar">
-        <span style="color:#888;font-size:13px;margin-right:8px;">📁 Pastas:</span>
-      </div>
+      <div class="folders-bar" id="folders-bar"><span style="color:#888;font-size:13px;margin-right:8px;">📁 Pastas:</span></div>
       
       <div class="new-folder-input" style="margin-bottom: 24px;">
         <input type="text" id="new-folder-name" placeholder="Nova pasta...">
@@ -413,58 +154,30 @@
           <h3 class="section-title">📋 Links</h3>
           <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
         </div>
-        <div class="links-list" id="links-list">
-          <div class="empty-state">
-            <div class="loading"></div>
-            <p style="margin-top:16px">Carregando links...</p>
-          </div>
-        </div>
+        <div class="links-list" id="links-list"><div class="empty-state"><div class="loading"></div><p style="margin-top:16px">Carregando...</p></div></div>
       </div>
     </div>
   </div>
   
   <div class="toast" id="toast"></div>
   
-  <!-- Modal Stats -->
   <div class="modal" id="stats-modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3>📊 Estatísticas</h3>
-        <button class="modal-close" onclick="closeModal('stats-modal')">×</button>
-      </div>
+      <div class="modal-header"><h3>📊 Estatísticas</h3><button class="modal-close" onclick="closeModal('stats-modal')">×</button></div>
       <div id="stats-content"></div>
     </div>
   </div>
   
-  <!-- Modal Editar -->
   <div class="modal" id="edit-modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3>✏️ Editar Link</h3>
-        <button class="modal-close" onclick="closeModal('edit-modal')">×</button>
-      </div>
+      <div class="modal-header"><h3>✏️ Editar Link</h3><button class="modal-close" onclick="closeModal('edit-modal')">×</button></div>
       <div class="modal-form">
         <input type="hidden" id="edit-slug">
-        <div class="form-group">
-          <label>Slug (não editável)</label>
-          <input type="text" id="edit-slug-display" disabled style="opacity:0.5">
-        </div>
-        <div class="form-group">
-          <label>URL de destino *</label>
-          <input type="url" id="edit-url" placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label>Título</label>
-          <input type="text" id="edit-title" placeholder="Título do link">
-        </div>
-        <div class="form-group">
-          <label>Pasta</label>
-          <select id="edit-folder"></select>
-        </div>
-        <div class="btn-row">
-          <button class="btn-cancel" onclick="closeModal('edit-modal')">Cancelar</button>
-          <button onclick="saveEdit()">Salvar</button>
-        </div>
+        <div class="form-group"><label>Slug (não editável)</label><input type="text" id="edit-slug-display" disabled style="opacity:0.5"></div>
+        <div class="form-group"><label>URL de destino *</label><input type="url" id="edit-url" placeholder="https://..."></div>
+        <div class="form-group"><label>Título</label><input type="text" id="edit-title" placeholder="Título"></div>
+        <div class="form-group"><label>Pasta</label><select id="edit-folder"></select></div>
+        <div class="btn-row"><button class="btn-cancel" onclick="closeModal('edit-modal')">Cancelar</button><button onclick="saveEdit()">Salvar</button></div>
       </div>
     </div>
   </div>
@@ -472,15 +185,7 @@
   <script>
     const API_BASE = window.location.origin;
     const CURRENT_DOMAIN = window.location.host;
-    
-    const ALLOWED_EMAILS = [
-      'ataliabs1983@gmail.com',
-      'bineryefi@gmail.com',
-      'ruanf195@gmail.com',
-      'enilson.lenyn@gmail.com',
-      'danielle.antunes@gmail.com'
-    ];
-    
+    const ALLOWED_EMAILS = ['ataliabs1983@gmail.com','bineryefi@gmail.com','ruanf195@gmail.com','enilson.lenyn@gmail.com','danielle.antunes@gmail.com'];
     const PASSWORD = 'senha@12345';
     
     let allFolders = ['Geral'];
@@ -491,10 +196,7 @@
       const session = localStorage.getItem('linkadmin_session');
       if (session) {
         const { email, expires } = JSON.parse(session);
-        if (Date.now() < expires && ALLOWED_EMAILS.includes(email.toLowerCase())) {
-          showAdmin(email);
-          return;
-        }
+        if (Date.now() < expires && ALLOWED_EMAILS.includes(email.toLowerCase())) { showAdmin(email); return; }
         localStorage.removeItem('linkadmin_session');
       }
       showLogin();
@@ -504,182 +206,128 @@
       const email = document.getElementById('login-email').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
       const errorEl = document.getElementById('login-error');
-      
       errorEl.style.display = 'none';
-      
-      if (!email || !password) {
-        errorEl.textContent = 'Preencha email e senha';
-        errorEl.style.display = 'block';
-        return;
-      }
-      
-      if (!ALLOWED_EMAILS.includes(email)) {
-        errorEl.textContent = 'Email não autorizado';
-        errorEl.style.display = 'block';
-        return;
-      }
-      
-      if (password !== PASSWORD) {
-        errorEl.textContent = 'Senha incorreta';
-        errorEl.style.display = 'block';
-        return;
-      }
-      
-      const session = { email: email, expires: Date.now() + (24 * 60 * 60 * 1000) };
-      localStorage.setItem('linkadmin_session', JSON.stringify(session));
+      if (!email || !password) { errorEl.textContent = 'Preencha email e senha'; errorEl.style.display = 'block'; return; }
+      if (!ALLOWED_EMAILS.includes(email)) { errorEl.textContent = 'Email não autorizado'; errorEl.style.display = 'block'; return; }
+      if (password !== PASSWORD) { errorEl.textContent = 'Senha incorreta'; errorEl.style.display = 'block'; return; }
+      localStorage.setItem('linkadmin_session', JSON.stringify({ email, expires: Date.now() + 86400000 }));
       showAdmin(email);
     }
     
-    function logout() {
-      localStorage.removeItem('linkadmin_session');
-      showLogin();
-    }
-    
-    function showLogin() {
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('admin-panel').style.display = 'none';
-    }
-    
-    function showAdmin(email) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
-      document.getElementById('user-email').textContent = email;
-      document.getElementById('current-domain').textContent = CURRENT_DOMAIN;
-      loadLinks();
-    }
-    
-    function showToast(message, isError = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = 'toast show' + (isError ? ' error' : '');
-      setTimeout(() => toast.className = 'toast', 3000);
-    }
-    
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
-    }
+    function logout() { localStorage.removeItem('linkadmin_session'); showLogin(); }
+    function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('admin-panel').style.display = 'none'; }
+    function showAdmin(email) { document.getElementById('login-screen').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; document.getElementById('user-email').textContent = email; document.getElementById('current-domain').textContent = CURRENT_DOMAIN; loadLinks(); }
+    function showToast(msg, err) { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show' + (err ? ' error' : ''); setTimeout(() => t.className = 'toast', 3000); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
     
     function updateFolderSelect() {
-      const select = document.getElementById('input-folder');
-      const editSelect = document.getElementById('edit-folder');
-      const options = allFolders.map(f => `<option value="${f}">${f}</option>`).join('');
-      select.innerHTML = options;
-      editSelect.innerHTML = options;
+      const opts = allFolders.map(f => `<option value="${f}">${f}</option>`).join('');
+      document.getElementById('input-folder').innerHTML = opts;
+      document.getElementById('edit-folder').innerHTML = opts;
     }
     
     function updateFolderTabs() {
       const bar = document.getElementById('folders-bar');
-      const folderCounts = {};
-      allLinks.forEach(link => {
-        const f = link.folder || 'Geral';
-        folderCounts[f] = (folderCounts[f] || 0) + 1;
-      });
+      const counts = {};
+      allLinks.forEach(l => { const f = l.folder || 'Geral'; counts[f] = (counts[f] || 0) + 1; });
       
-      bar.innerHTML = `
-        <span style="color:#888;font-size:13px;margin-right:8px;">📁 Pastas:</span>
-        <button class="folder-tab ${currentFolder === 'Todas' ? 'active' : ''}" onclick="filterByFolder('Todas')">
-          Todas <span class="count">${allLinks.length}</span>
-        </button>
-        ${allFolders.map(f => `
-          <button class="folder-tab ${currentFolder === f ? 'active' : ''}" onclick="filterByFolder('${f}')">
-            ${f} <span class="count">${folderCounts[f] || 0}</span>
-          </button>
-        `).join('')}
-      `;
+      bar.innerHTML = `<span style="color:#888;font-size:13px;margin-right:8px;">📁 Pastas:</span>
+        <button class="folder-tab ${currentFolder === 'Todas' ? 'active' : ''}" onclick="filterByFolder('Todas')">Todas <span class="count">${allLinks.length}</span></button>
+        ${allFolders.map(f => `<button class="folder-tab ${currentFolder === f ? 'active' : ''}" onclick="filterByFolder('${f}')">${f} <span class="count">${counts[f] || 0}</span>${f !== 'Geral' ? `<span class="delete-folder" onclick="event.stopPropagation();deleteFolder('${f}')" title="Deletar pasta">×</span>` : ''}</button>`).join('')}`;
     }
     
-    function filterByFolder(folder) {
-      currentFolder = folder;
-      updateFolderTabs();
-      renderLinks();
-    }
+    function filterByFolder(f) { currentFolder = f; updateFolderTabs(); renderLinks(); }
     
-    function addFolder() {
+    async function addFolder() {
       const input = document.getElementById('new-folder-name');
       const name = input.value.trim();
       if (!name) { showToast('Digite o nome da pasta', true); return; }
-      if (allFolders.includes(name)) { showToast('Pasta já existe', true); return; }
-      allFolders.push(name);
-      allFolders.sort();
-      updateFolderSelect();
-      updateFolderTabs();
-      input.value = '';
-      showToast(`Pasta "${name}" criada!`);
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/folders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        
+        allFolders.push(name);
+        allFolders.sort();
+        updateFolderSelect();
+        updateFolderTabs();
+        input.value = '';
+        showToast(`Pasta "${name}" criada!`);
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+    
+    async function deleteFolder(name) {
+      if (!confirm(`Deletar pasta "${name}"? Os links serão movidos para "Geral".`)) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/folders`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        
+        showToast('Pasta removida');
+        loadLinks();
+      } catch (err) {
+        showToast(err.message, true);
+      }
     }
     
     async function loadLinks() {
       try {
         const res = await fetch(`${API_BASE}/api/links`);
         const data = await res.json();
-        
         allLinks = data.links || [];
-        allFolders = data.folders || ['Geral'];
+        allFolders = data.folders && data.folders.length > 0 ? data.folders : ['Geral'];
         if (!allFolders.includes('Geral')) allFolders.unshift('Geral');
         
         document.getElementById('total-links').textContent = data.total || 0;
         document.getElementById('total-folders').textContent = allFolders.length;
-        
-        const totalClicks = allLinks.reduce((sum, link) => sum + (link.clicks || 0), 0);
-        document.getElementById('total-clicks').textContent = totalClicks;
+        document.getElementById('total-clicks').textContent = allLinks.reduce((s, l) => s + (l.clicks || 0), 0);
         
         updateFolderSelect();
         updateFolderTabs();
         renderLinks();
-      } catch (err) {
-        console.error(err);
-        showToast('Erro ao carregar links', true);
-      }
+      } catch (err) { showToast('Erro ao carregar', true); }
     }
     
     function renderLinks() {
-      const listEl = document.getElementById('links-list');
+      const el = document.getElementById('links-list');
+      let links = currentFolder === 'Todas' ? allLinks : allLinks.filter(l => (l.folder || 'Geral') === currentFolder);
       
-      let filteredLinks = allLinks;
-      if (currentFolder !== 'Todas') {
-        filteredLinks = allLinks.filter(l => (l.folder || 'Geral') === currentFolder);
-      }
-      
-      if (filteredLinks.length === 0) {
-        listEl.innerHTML = `<div class="empty-state"><p>Nenhum link ${currentFolder !== 'Todas' ? 'nesta pasta' : 'criado ainda'}</p></div>`;
-        return;
-      }
+      if (!links.length) { el.innerHTML = `<div class="empty-state"><p>Nenhum link ${currentFolder !== 'Todas' ? 'nesta pasta' : ''}</p></div>`; return; }
       
       const grouped = {};
-      filteredLinks.forEach(link => {
-        const folder = link.folder || 'Geral';
-        if (!grouped[folder]) grouped[folder] = [];
-        grouped[folder].push(link);
-      });
+      links.forEach(l => { const f = l.folder || 'Geral'; if (!grouped[f]) grouped[f] = []; grouped[f].push(l); });
       
       let html = '';
-      Object.keys(grouped).sort().forEach(folder => {
-        if (currentFolder === 'Todas') {
-          html += `<div class="folder-group"><div class="folder-header">📁 ${folder} (${grouped[folder].length})</div>`;
-        }
-        
-        grouped[folder].forEach(link => {
-          html += `
-            <div class="link-item">
-              <div>
-                <a href="${link.short_url}" target="_blank" class="link-slug">/${link.slug}</a>
-                ${link.title ? `<div style="font-size:12px;color:#666;margin-top:4px">${link.title}</div>` : ''}
-              </div>
-              <div class="link-destination" title="${link.destination_url}">${link.destination_url}</div>
-              <div class="link-clicks"><span>👆</span> ${link.clicks || 0}</div>
-              <div class="link-actions">
-                <button class="btn-small btn-copy" onclick="copyLink('${link.short_url}')">Copiar</button>
-                <button class="btn-small btn-edit" onclick="openEdit('${link.slug}')">Editar</button>
-                <button class="btn-small btn-stats" onclick="showStats('${link.slug}')">Stats</button>
-                <button class="btn-small btn-delete" onclick="deleteLink('${link.slug}')">🗑️</button>
-              </div>
+      Object.keys(grouped).sort().forEach(f => {
+        if (currentFolder === 'Todas') html += `<div class="folder-group"><div class="folder-header">📁 ${f} (${grouped[f].length})</div>`;
+        grouped[f].forEach(l => {
+          html += `<div class="link-item">
+            <div><a href="${l.short_url}" target="_blank" class="link-slug">/${l.slug}</a>${l.title ? `<div style="font-size:12px;color:#666;margin-top:4px">${l.title}</div>` : ''}</div>
+            <div class="link-destination" title="${l.destination_url}">${l.destination_url}</div>
+            <div class="link-clicks"><span>👆</span> ${l.clicks || 0}</div>
+            <div class="link-actions">
+              <button class="btn-small btn-copy" onclick="copyLink('${l.short_url}')">Copiar</button>
+              <button class="btn-small btn-edit" onclick="openEdit('${l.slug}')">Editar</button>
+              <button class="btn-small btn-stats" onclick="showStats('${l.slug}')">Stats</button>
+              <button class="btn-small btn-delete" onclick="deleteLink('${l.slug}')">🗑️</button>
             </div>
-          `;
+          </div>`;
         });
-        
         if (currentFolder === 'Todas') html += '</div>';
       });
-      
-      listEl.innerHTML = html;
+      el.innerHTML = html;
     }
     
     async function createLink() {
@@ -687,51 +335,34 @@
       const slug = document.getElementById('input-slug').value.trim();
       const title = document.getElementById('input-title').value.trim();
       const folder = document.getElementById('input-folder').value;
-      
-      if (!url) { showToast('URL é obrigatória', true); return; }
+      if (!url) { showToast('URL obrigatória', true); return; }
       
       const btn = document.getElementById('btn-create');
-      btn.disabled = true;
-      btn.textContent = 'Criando...';
+      btn.disabled = true; btn.textContent = 'Criando...';
       
       try {
-        const res = await fetch(`${API_BASE}/api/links`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url, slug: slug || undefined, title: title || undefined, folder })
-        });
-        
+        const res = await fetch(`${API_BASE}/api/links`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, slug: slug || undefined, title: title || undefined, folder }) });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao criar');
-        
+        if (!res.ok) throw new Error(data.error);
         showToast(`Link criado: ${data.link.short_url}`);
         document.getElementById('input-url').value = '';
         document.getElementById('input-slug').value = '';
         document.getElementById('input-title').value = '';
         loadLinks();
-      } catch (err) {
-        showToast(err.message, true);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Criar';
-      }
+      } catch (err) { showToast(err.message, true); }
+      finally { btn.disabled = false; btn.textContent = 'Criar'; }
     }
     
-    function copyLink(url) {
-      navigator.clipboard.writeText(url);
-      showToast('Link copiado!');
-    }
+    function copyLink(url) { navigator.clipboard.writeText(url); showToast('Copiado!'); }
     
     function openEdit(slug) {
-      const link = allLinks.find(l => l.slug === slug);
-      if (!link) return;
-      
+      const l = allLinks.find(x => x.slug === slug);
+      if (!l) return;
       document.getElementById('edit-slug').value = slug;
       document.getElementById('edit-slug-display').value = '/' + slug;
-      document.getElementById('edit-url').value = link.destination_url;
-      document.getElementById('edit-title').value = link.title || '';
-      document.getElementById('edit-folder').value = link.folder || 'Geral';
-      
+      document.getElementById('edit-url').value = l.destination_url;
+      document.getElementById('edit-title').value = l.title || '';
+      document.getElementById('edit-folder').value = l.folder || 'Geral';
       document.getElementById('edit-modal').classList.add('show');
     }
     
@@ -740,94 +371,48 @@
       const url = document.getElementById('edit-url').value.trim();
       const title = document.getElementById('edit-title').value.trim();
       const folder = document.getElementById('edit-folder').value;
-      
-      if (!url) { showToast('URL é obrigatória', true); return; }
+      if (!url) { showToast('URL obrigatória', true); return; }
       
       try {
-        const res = await fetch(`${API_BASE}/api/link/${slug}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url, title, folder })
-        });
-        
+        const res = await fetch(`${API_BASE}/api/link/${slug}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, title, folder }) });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        
-        showToast('Link atualizado!');
+        if (!res.ok) throw new Error(data.error);
+        showToast('Atualizado!');
         closeModal('edit-modal');
         loadLinks();
-      } catch (err) {
-        showToast(err.message, true);
-      }
+      } catch (err) { showToast(err.message, true); }
     }
     
     async function deleteLink(slug) {
-      if (!confirm(`Tem certeza que quer deletar /${slug}?`)) return;
-      
+      if (!confirm(`Deletar /${slug}?`)) return;
       try {
         const res = await fetch(`${API_BASE}/api/link/${slug}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao deletar');
-        showToast('Link removido');
+        if (!res.ok) throw new Error('Erro');
+        showToast('Removido');
         loadLinks();
-      } catch (err) {
-        showToast('Erro ao deletar', true);
-      }
+      } catch (err) { showToast('Erro', true); }
     }
     
     async function showStats(slug) {
       const modal = document.getElementById('stats-modal');
       const content = document.getElementById('stats-content');
-      
       content.innerHTML = '<div style="text-align:center;padding:40px"><div class="loading"></div></div>';
       modal.classList.add('show');
       
       try {
         const res = await fetch(`${API_BASE}/api/stats/${slug}?days=30`);
         const data = await res.json();
-        const stats = data.stats;
-        
-        content.innerHTML = `
-          <div style="margin-bottom:20px">
-            <strong style="color:#3b82f6">/${data.link.slug}</strong>
-            <div style="font-size:13px;color:#666;margin-top:4px">${data.link.destination_url}</div>
-          </div>
-          <div class="stats-grid">
-            <div class="stats-card">
-              <div class="stats-card-value">${stats.total_clicks}</div>
-              <div class="stats-card-label">Cliques totais</div>
-            </div>
-            <div class="stats-card">
-              <div class="stats-card-value">${stats.clicks_in_period}</div>
-              <div class="stats-card-label">Últimos 30 dias</div>
-            </div>
-          </div>
-          <div style="margin-top:20px">
-            <h4 style="font-size:14px;margin-bottom:12px">📱 Por dispositivo</h4>
-            ${Object.entries(stats.by_device).map(([d, c]) => `
-              <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333">
-                <span>${d}</span><span style="color:#3b82f6">${c}</span>
-              </div>
-            `).join('') || '<div style="color:#666;padding:8px 0">Sem dados</div>'}
-          </div>
-        `;
-      } catch (err) {
-        content.innerHTML = '<p style="color:#ef4444;text-align:center">Erro ao carregar</p>';
-      }
+        const s = data.stats;
+        content.innerHTML = `<div style="margin-bottom:20px"><strong style="color:#3b82f6">/${data.link.slug}</strong><div style="font-size:13px;color:#666;margin-top:4px">${data.link.destination_url}</div></div>
+          <div class="stats-grid"><div class="stats-card"><div class="stats-card-value">${s.total_clicks}</div><div class="stats-card-label">Total</div></div><div class="stats-card"><div class="stats-card-value">${s.clicks_in_period}</div><div class="stats-card-label">30 dias</div></div></div>
+          <div style="margin-top:20px"><h4 style="font-size:14px;margin-bottom:12px">📱 Dispositivos</h4>${Object.entries(s.by_device).map(([d,c]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #333"><span>${d}</span><span style="color:#3b82f6">${c}</span></div>`).join('') || '<div style="color:#666">Sem dados</div>'}</div>`;
+      } catch (err) { content.innerHTML = '<p style="color:#ef4444;text-align:center">Erro</p>'; }
     }
     
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.remove('show');
-      });
-    });
-    
-    document.getElementById('login-email').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') document.getElementById('login-password').focus();
-    });
-    
-    document.getElementById('login-password').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') login();
-    });
+    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); }));
+    document.getElementById('login-email').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
+    document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+    document.getElementById('new-folder-name').addEventListener('keypress', e => { if (e.key === 'Enter') addFolder(); });
     
     checkSession();
   </script>
