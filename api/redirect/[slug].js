@@ -1,82 +1,127 @@
 const { supabase } = require('../../lib/supabase');
 
-function getDevice(ua) {
-  if (!ua) return 'unknown';
-  ua = ua.toLowerCase();
-  if (ua.includes('android')) return 'android';
-  if (ua.includes('iphone') || ua.includes('ipad') || ua.includes('ipod')) return 'ios';
-  if (ua.includes('mobile')) return 'mobile';
-  return 'desktop';
-}
-
-function getYouTubeId(url) {
-  if (!url) return null;
-  var m = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  return m ? m[1] : null;
+function getDomain(req) {
+  const host = req.headers.host || req.headers['x-forwarded-host'] || '';
+  return host.replace(/:\d+$/, '');
 }
 
 module.exports = async (req, res) => {
-  var slug = req.query.slug;
-  
-  if (!slug || slug === 'favicon' || /\.(ico|png|jpg|css|js)$/.test(slug)) {
-    return res.status(404).end();
+  const { slug } = req.query;
+  const domain = getDomain(req);
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  try {
-    var { data: link } = await supabase
-      .from('links')
-      .select('id, destination_url')
-      .eq('slug', slug)
-      .single();
+  // GET - Detalhes de um link
+  if (req.method === 'GET') {
+    try {
+      const { data: link, error } = await supabase
+        .from('links')
+        .select('*')
+        .eq('slug', slug)
+        .eq('domain', domain)
+        .single();
 
-    if (!link) {
-      return res.status(404).send('Link nao encontrado');
-    }
-
-    const userAgent = req.headers['user-agent'] || '';
-    const device = getDevice(userAgent);
-
-    // Salva clique async
-    supabase.from('clicks').insert({
-      link_id: link.id,
-      ip: (req.headers['x-forwarded-for'] || '').split(',')[0] || null,
-      user_agent: userAgent,
-      referer: req.headers['referer'] || null,
-      country: req.headers['x-vercel-ip-country'] || null,
-      city: req.headers['x-vercel-ip-city'] || null,
-      device: device
-    });
-
-    // URL de destino
-    var url = link.destination_url;
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-
-    // Se é YouTube, tenta forçar o app
-    var ytId = getYouTubeId(url);
-    if (ytId) {
-      if (device === 'android') {
-        // Android Intent: tenta abrir o app, se não tiver vai pro navegador
-        // O formato 'intent://' é o mais robusto para Android
-        const intentUrl = `intent://www.youtube.com/watch?v=${ytId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-        return res.redirect(302, intentUrl);
-      } 
-      
-      if (device === 'ios') {
-        // iOS: youtube:// funciona bem se o app estiver instalado
-        const iosUrl = `youtube://www.youtube.com/watch?v=${ytId}`;
-        // Como o redirecionamento direto para esquema pode falhar se o app não existir,
-        // o ideal em produção seria uma página JS, mas aqui aplicamos o Deep Link direto
-        return res.redirect(302, iosUrl);
+      if (error || !link) {
+        return res.status(404).json({ error: 'Link não encontrado' });
       }
 
-      // Fallback para desktop ou outros
-      url = 'https://youtu.be/' + ytId;
+      const { count: clicks } = await supabase
+        .from('clicks')
+        .select('*', { count: 'exact', head: true })
+        .eq('link_id', link.id);
+
+      return res.status(200).json({
+        success: true,
+        link: {
+          ...link,
+          short_url: `https://${domain}/${link.slug}`,
+          clicks: clicks || 0
+        }
+      });
+
+    } catch (error) {
+      console.error('Erro ao buscar link:', error);
+      return res.status(500).json({ error: 'Erro ao buscar link' });
     }
-
-    // Redirect padrão
-    return res.redirect(302, url);
-
-  } catch (e) {
-    return res.redirect(302, 'https://youtube.com');
   }
+
+  // DELETE - Remover link
+  if (req.method === 'DELETE') {
+    try {
+      const { data: link, error: findError } = await supabase
+        .from('links')
+        .select('id')
+        .eq('slug', slug)
+        .eq('domain', domain)
+        .single();
+
+      if (findError || !link) {
+        return res.status(404).json({ error: 'Link não encontrado' });
+      }
+
+      const { error } = await supabase
+        .from('links')
+        .delete()
+        .eq('slug', slug)
+        .eq('domain', domain);
+
+      if (error) throw error;
+
+      return res.status(200).json({
+        success: true,
+        message: 'Link removido com sucesso'
+      });
+
+    } catch (error) {
+      console.error('Erro ao remover link:', error);
+      return res.status(500).json({ error: 'Erro ao remover link' });
+    }
+  }
+
+  // PUT - Atualizar link
+  if (req.method === 'PUT') {
+    try {
+      const { url, title, folder } = req.body;
+
+      const updateData = {};
+      
+      if (url) {
+        // Normaliza URL
+        let normalizedUrl = url.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+          normalizedUrl = 'https://' + normalizedUrl;
+        }
+        updateData.destination_url = normalizedUrl;
+      }
+      
+      if (title !== undefined) updateData.title = title;
+      if (folder !== undefined) updateData.folder = folder;
+
+      const { data, error } = await supabase
+        .from('links')
+        .update(updateData)
+        .eq('slug', slug)
+        .eq('domain', domain)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return res.status(200).json({
+        success: true,
+        link: {
+          ...data,
+          short_url: `https://${domain}/${data.slug}`
+        }
+      });
+
+    } catch (error) {
+      console.error('Erro ao atualizar link:', error);
+      return res.status(500).json({ error: 'Erro ao atualizar link' });
+    }
+  }
+
+  return res.status(405).json({ error: 'Método não permitido' });
 };
