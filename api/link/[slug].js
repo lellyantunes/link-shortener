@@ -1,6 +1,5 @@
 const { supabase } = require('../../lib/supabase');
 
-// Extrai domínio do host
 function getDomain(req) {
   const host = req.headers.host || req.headers['x-forwarded-host'] || '';
   return host.replace(/:\d+$/, '');
@@ -28,7 +27,6 @@ module.exports = async (req, res) => {
         return res.status(404).json({ error: 'Link não encontrado' });
       }
 
-      // Busca contagem de cliques
       const { count: clicks } = await supabase
         .from('clicks')
         .select('*', { count: 'exact', head: true })
@@ -85,11 +83,21 @@ module.exports = async (req, res) => {
   // PUT - Atualizar link
   if (req.method === 'PUT') {
     try {
-      const { url, title } = req.body;
+      const { url, title, folder } = req.body;
 
       const updateData = {};
-      if (url) updateData.destination_url = url;
+      
+      if (url) {
+        // Normaliza URL
+        let normalizedUrl = url.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+          normalizedUrl = 'https://' + normalizedUrl;
+        }
+        updateData.destination_url = normalizedUrl;
+      }
+      
       if (title !== undefined) updateData.title = title;
+      if (folder !== undefined) updateData.folder = folder;
 
       const { data, error } = await supabase
         .from('links')
