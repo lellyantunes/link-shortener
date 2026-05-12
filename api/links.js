@@ -1,6 +1,5 @@
 const { supabase } = require('../lib/supabase');
 
-// Gera slug aleatório
 function generateSlug(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let slug = '';
@@ -10,14 +9,21 @@ function generateSlug(length = 6) {
   return slug;
 }
 
-// Extrai domínio do host
 function getDomain(req) {
   const host = req.headers.host || req.headers['x-forwarded-host'] || '';
-  return host.replace(/:\d+$/, ''); // Remove porta se tiver
+  return host.replace(/:\d+$/, '');
+}
+
+function normalizeUrl(url) {
+  if (!url) return url;
+  url = url.trim();
+  if (!url.match(/^https?:\/\//i)) {
+    url = 'https://' + url;
+  }
+  return url;
 }
 
 module.exports = async (req, res) => {
-  // CORS preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -27,16 +33,16 @@ module.exports = async (req, res) => {
   // POST - Criar novo link
   if (req.method === 'POST') {
     try {
-      const { url, slug, title } = req.body;
+      const { url, slug, title, folder } = req.body;
 
       if (!url) {
         return res.status(400).json({ error: 'URL é obrigatória' });
       }
 
-      // Usa slug personalizado ou gera um
+      const normalizedUrl = normalizeUrl(url);
       const finalSlug = slug || generateSlug();
+      const finalFolder = folder || 'Geral';
 
-      // Verifica se slug já existe (global, não por domínio)
       const { data: existing } = await supabase
         .from('links')
         .select('slug')
@@ -47,14 +53,14 @@ module.exports = async (req, res) => {
         return res.status(409).json({ error: 'Slug já existe' });
       }
 
-      // Cria o link vinculado ao domínio
       const { data, error } = await supabase
         .from('links')
         .insert({
           slug: finalSlug,
-          destination_url: url,
+          destination_url: normalizedUrl,
           title: title || null,
-          domain: domain
+          domain: domain,
+          folder: finalFolder
         })
         .select()
         .single();
@@ -69,6 +75,7 @@ module.exports = async (req, res) => {
           short_url: `https://${domain}/${data.slug}`,
           destination_url: data.destination_url,
           title: data.title,
+          folder: data.folder,
           created_at: data.created_at
         }
       });
@@ -79,21 +86,36 @@ module.exports = async (req, res) => {
     }
   }
 
-  // GET - Listar links DO DOMÍNIO ATUAL
+  // GET - Listar links
   if (req.method === 'GET') {
     try {
-      const { limit = 50, offset = 0 } = req.query;
+      const { limit = 100, offset = 0, folder } = req.query;
 
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('links')
         .select('*', { count: 'exact' })
         .eq('domain', domain)
-        .order('created_at', { ascending: false })
+        .order('folder', { ascending: true })
+        .order('created_at', { ascending: false });
+
+      if (folder && folder !== 'Todas') {
+        query = query.eq('folder', folder);
+      }
+
+      const { data, error, count } = await query
         .range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
 
       if (error) throw error;
 
-      // Busca contagem de cliques para cada link
+      // Busca pastas da tabela folders
+      const { data: foldersData } = await supabase
+        .from('folders')
+        .select('name')
+        .eq('domain', domain)
+        .order('name', { ascending: true });
+
+      const folders = (foldersData || []).map(f => f.name);
+
       const linksWithStats = await Promise.all(
         (data || []).map(async (link) => {
           const { count: clicks } = await supabase
@@ -113,6 +135,7 @@ module.exports = async (req, res) => {
         success: true,
         total: count || 0,
         domain: domain,
+        folders: folders,
         links: linksWithStats
       });
 
