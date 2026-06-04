@@ -89,7 +89,7 @@ module.exports = async (req, res) => {
   // GET - Listar links
   if (req.method === 'GET') {
     try {
-      const { limit = 100, offset = 0, folder } = req.query;
+      const { limit = 500, offset = 0, folder } = req.query;
 
       // Busca links do domínio atual
       let query = supabase
