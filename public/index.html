@@ -53,8 +53,13 @@
     .new-folder-input input { padding: 8px 12px; font-size: 13px; width: 150px; }
     .new-folder-input button { padding: 8px 12px; font-size: 13px; }
     .links-section { background: #1a1a2e; border-radius: 16px; border: 1px solid #2a2a4a; overflow: hidden; }
-    .section-header { padding: 20px 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center; }
+    .section-header { padding: 20px 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .section-title { font-size: 16px; font-weight: 600; }
+    .section-actions { display: flex; gap: 12px; align-items: center; }
+    .search-box { position: relative; }
+    .search-box input { padding: 8px 16px 8px 36px; font-size: 13px; width: 250px; background: #0f0f1a; border: 1px solid #333; border-radius: 8px; color: #fff; }
+    .search-box input:focus { border-color: #3b82f6; outline: none; }
+    .search-box::before { content: "🔍"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; }
     .refresh-btn { background: transparent; border: 1px solid #333; padding: 8px 16px; font-size: 12px; }
     .refresh-btn:hover { background: #2a2a4a; }
     .links-list { max-height: 600px; overflow-y: auto; }
@@ -62,6 +67,7 @@
     .folder-header { background: #16213e; padding: 12px 24px; font-size: 14px; font-weight: 600; color: #3b82f6; display: flex; align-items: center; gap: 8px; }
     .link-item { display: grid; grid-template-columns: 1fr 2fr auto auto; gap: 16px; padding: 16px 24px; border-bottom: 1px solid #2a2a4a; align-items: center; }
     .link-item:hover { background: rgba(59, 130, 246, 0.05); }
+    .link-item.hidden { display: none; }
     @media (max-width: 768px) { .link-item { grid-template-columns: 1fr; gap: 8px; } }
     .link-slug { font-weight: 600; color: #3b82f6; font-family: monospace; font-size: 14px; text-decoration: none; }
     .link-slug:hover { text-decoration: underline; }
@@ -78,6 +84,7 @@
     .btn-stats { background: #8b5cf6; }
     .btn-stats:hover { background: #7c3aed; }
     .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+    .no-results { text-align: center; padding: 40px 20px; color: #888; }
     .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: #fff; padding: 16px 24px; border-radius: 8px; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1000; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.error { background: #ef4444; }
@@ -98,6 +105,8 @@
     .stats-card-label { font-size: 12px; color: #666; margin-top: 4px; }
     .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #333; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .search-result-count { font-size: 12px; color: #888; margin-left: 8px; }
+    mark { background: #3b82f6; color: #fff; padding: 0 2px; border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -151,8 +160,13 @@
       
       <div class="links-section">
         <div class="section-header">
-          <h3 class="section-title">📋 Links</h3>
-          <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
+          <h3 class="section-title">📋 Links <span class="search-result-count" id="search-result-count"></span></h3>
+          <div class="section-actions">
+            <div class="search-box">
+              <input type="text" id="search-input" placeholder="Buscar por slug, título ou URL..." oninput="searchLinks()">
+            </div>
+            <button class="refresh-btn" onclick="loadLinks()">↻ Atualizar</button>
+          </div>
         </div>
         <div class="links-list" id="links-list"><div class="empty-state"><div class="loading"></div><p style="margin-top:16px">Carregando...</p></div></div>
       </div>
@@ -191,6 +205,7 @@
     let allFolders = ['Geral'];
     let currentFolder = 'Todas';
     let allLinks = [];
+    let searchTerm = '';
     
     function checkSession() {
       const session = localStorage.getItem('linkadmin_session');
@@ -238,6 +253,17 @@
     
     function filterByFolder(f) { currentFolder = f; updateFolderTabs(); renderLinks(); }
     
+    function searchLinks() {
+      searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+      renderLinks();
+    }
+    
+    function highlightMatch(text, term) {
+      if (!term || !text) return text || '';
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+    
     async function addFolder() {
       const input = document.getElementById('new-folder-name');
       const name = input.value.trim();
@@ -284,7 +310,7 @@
     
     async function loadLinks() {
       try {
-        const res = await fetch(`${API_BASE}/api/links`);
+        const res = await fetch(`${API_BASE}/api/links?limit=500`);
         const data = await res.json();
         allLinks = data.links || [];
         allFolders = data.folders && data.folders.length > 0 ? data.folders : ['Geral'];
@@ -302,20 +328,43 @@
     
     function renderLinks() {
       const el = document.getElementById('links-list');
+      const countEl = document.getElementById('search-result-count');
+      
+      // Filtra por pasta
       let links = currentFolder === 'Todas' ? allLinks : allLinks.filter(l => (l.folder || 'Geral') === currentFolder);
       
-      if (!links.length) { el.innerHTML = `<div class="empty-state"><p>Nenhum link ${currentFolder !== 'Todas' ? 'nesta pasta' : ''}</p></div>`; return; }
+      // Filtra por busca
+      if (searchTerm) {
+        links = links.filter(l => {
+          const slug = (l.slug || '').toLowerCase();
+          const title = (l.title || '').toLowerCase();
+          const url = (l.destination_url || '').toLowerCase();
+          return slug.includes(searchTerm) || title.includes(searchTerm) || url.includes(searchTerm);
+        });
+        countEl.textContent = `(${links.length} encontrado${links.length !== 1 ? 's' : ''})`;
+      } else {
+        countEl.textContent = '';
+      }
+      
+      if (!links.length) { 
+        el.innerHTML = `<div class="empty-state"><p>${searchTerm ? 'Nenhum link encontrado para "' + searchTerm + '"' : 'Nenhum link ' + (currentFolder !== 'Todas' ? 'nesta pasta' : '')}</p></div>`; 
+        return; 
+      }
       
       const grouped = {};
       links.forEach(l => { const f = l.folder || 'Geral'; if (!grouped[f]) grouped[f] = []; grouped[f].push(l); });
       
       let html = '';
       Object.keys(grouped).sort().forEach(f => {
-        if (currentFolder === 'Todas') html += `<div class="folder-group"><div class="folder-header">📁 ${f} (${grouped[f].length})</div>`;
+        if (currentFolder === 'Todas' && !searchTerm) html += `<div class="folder-group"><div class="folder-header">📁 ${f} (${grouped[f].length})</div>`;
         grouped[f].forEach(l => {
+          const slugDisplay = searchTerm ? highlightMatch(l.slug, searchTerm) : l.slug;
+          const titleDisplay = searchTerm && l.title ? highlightMatch(l.title, searchTerm) : (l.title || '');
+          const urlDisplay = searchTerm ? highlightMatch(l.destination_url, searchTerm) : l.destination_url;
+          
           html += `<div class="link-item">
-            <div><a href="${l.short_url}" target="_blank" class="link-slug">/${l.slug}</a>${l.title ? `<div style="font-size:12px;color:#666;margin-top:4px">${l.title}</div>` : ''}</div>
-            <div class="link-destination" title="${l.destination_url}">${l.destination_url}</div>
+            <div><a href="${l.short_url}" target="_blank" class="link-slug">/${slugDisplay}</a>${titleDisplay ? `<div style="font-size:12px;color:#666;margin-top:4px">${titleDisplay}</div>` : ''}</div>
+            <div class="link-destination" title="${l.destination_url}">${urlDisplay}</div>
             <div class="link-clicks"><span>👆</span> ${l.clicks || 0}</div>
             <div class="link-actions">
               <button class="btn-small btn-copy" onclick="copyLink('${l.short_url}')">Copiar</button>
@@ -325,7 +374,7 @@
             </div>
           </div>`;
         });
-        if (currentFolder === 'Todas') html += '</div>';
+        if (currentFolder === 'Todas' && !searchTerm) html += '</div>';
       });
       el.innerHTML = html;
     }
@@ -413,6 +462,7 @@
     document.getElementById('login-email').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
     document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
     document.getElementById('new-folder-name').addEventListener('keypress', e => { if (e.key === 'Enter') addFolder(); });
+    document.getElementById('search-input').addEventListener('keypress', e => { if (e.key === 'Escape') { e.target.value = ''; searchLinks(); } });
     
     checkSession();
   </script>
