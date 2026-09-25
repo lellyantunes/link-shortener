@@ -128,21 +128,23 @@ module.exports = async (req, res) => {
       const folders = (foldersData || []).map(f => f.name);
       if (!folders.includes('Geral')) folders.unshift('Geral');
 
-      // Conta cliques para cada link
-      const linksWithStats = await Promise.all(
-        (data || []).map(async (link) => {
-          const { count: clicks } = await supabase
-            .from('clicks')
-            .select('*', { count: 'exact', head: true })
-            .eq('link_id', link.id);
+      // Busca contagem de cliques de uma vez só
+      const linkIds = (data || []).map(l => l.id);
+      const { data: clicksData } = await supabase
+        .from('clicks')
+        .select('link_id')
+        .in('link_id', linkIds);
 
-          return {
-            ...link,
-            short_url: `https://${domain}/${link.slug}`,
-            clicks: clicks || 0
-          };
-        })
-      );
+      const clickCounts = {};
+      (clicksData || []).forEach(c => {
+        clickCounts[c.link_id] = (clickCounts[c.link_id] || 0) + 1;
+      });
+
+      const linksWithStats = (data || []).map(link => ({
+        ...link,
+        short_url: `https://${domain}/${link.slug}`,
+        clicks: clickCounts[link.id] || 0
+      }));
 
       return res.status(200).json({
         success: true,
