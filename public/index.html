@@ -310,7 +310,7 @@
     
     async function loadLinks() {
       try {
-        const res = await fetch(`${API_BASE}/api/links?limit=500`);
+        const res = await fetch(`${API_BASE}/api/links?limit=5000`);
         const data = await res.json();
         allLinks = data.links || [];
         allFolders = data.folders && data.folders.length > 0 ? data.folders : ['Geral'];
